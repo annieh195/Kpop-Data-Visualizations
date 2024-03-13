@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// ^^ import necessary libraries to setup an express server to run API calls
+// ^^ Import necessary libraries to setup an express server to run API calls
 
 app.get('/api/data/concerts/:artistName/:page', async(req,res) =>{
     const artistName = req.params.artistName;
@@ -17,7 +17,7 @@ app.get('/api/data/concerts/:artistName/:page', async(req,res) =>{
     try{
         const response = await axios.get(`https://api.setlist.fm/rest/1.0/search/setlists?artistName=${artistName}&countryCode=US&p=${page}&sort=sortName`, {
             headers: {
-                'x-api-key': process.env.SETLISTFM_API_KEY //for security, the api key is in an .env file
+                'x-api-key': process.env.SETLISTFM_API_KEY // For security, the API key is in an .env file
             }
         });
         const data = response.data;
