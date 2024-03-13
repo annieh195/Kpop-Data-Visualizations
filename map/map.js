@@ -1,8 +1,9 @@
 Promise.all([
     d3.json('us_states.topojson'),
     d3.json('us.json'),
-    d3.csv('interest_over_time.csv')
-]).then(function ([us, data, csvData]) {
+    d3.csv('interest_over_time.csv'),
+    d3.csv('concerts.csv')
+]).then(function ([us, data, interestData, concertData]) {
     var states = topojson.feature(us, us.objects.us_states).features;
 
     var width = window.innerWidth * 0.8,
@@ -24,7 +25,7 @@ Promise.all([
         .append("g")
         .attr("transform", "translate(" + mapMargin.left + "," + mapMargin.top + ")");
 
-    // Define projection and path generator (also for later use)
+    // Define projection and path generator
     var projection = d3.geoAlbersUsa()
         .translate([mapWidth / 2, mapHeight / 2])
         .scale(1000);
@@ -32,7 +33,7 @@ Promise.all([
 
     // CSV with states and interest values by months
     var interestDataByMonth = {};
-    csvData.forEach(function (d) {
+    interestData.forEach(function (d) {
         var month = d.Date;
         interestDataByMonth[month] = {};
         for (var state in d) {
@@ -44,7 +45,7 @@ Promise.all([
 
     // Color scale for interest values over time
     var colorScale = d3.scaleSequential(d3.interpolateBlues)
-        .domain([0, d3.max(csvData, function (d) {
+        .domain([0, d3.max(interestData, function (d) {
             return d3.max(Object.keys(d).map(function (key) {
                 return key !== 'Date' ? +d[key] : 0;
             }));
@@ -54,6 +55,38 @@ Promise.all([
     var tooltip = d3.select("#map").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
+    
+    // where concert happened using lat+long
+    function plotConcerts(month) {
+        svg.selectAll(".concert").remove();
+
+        var filteredConcerts = concertData.filter(function (d) {
+            return d.Date === month;
+        });
+
+        svg.selectAll(".concert")
+            .data(filteredConcerts)
+            .enter().append("circle")
+            .attr("class", "concert")
+            .attr("cx", function (d) { return projection([+d.Longitude, +d.Latitude])[0]; })
+            .attr("cy", function (d) { return projection([+d.Longitude, +d.Latitude])[1]; })
+            .attr("r", 5)
+            .style("fill", "black")
+            .style("opacity", 0.75)
+            .on("mouseover", function (d) {
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                tooltip.html(d.Artist)
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px");
+            })
+            .on("mouseout", function (d) {
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });
+    }
 
     function updateMap(month) {
         svg.selectAll(".state")
@@ -79,6 +112,7 @@ Promise.all([
                     .duration(500)
                     .style("opacity", 0);
             });
+        plotConcerts(month); // update concerts
     }
 
     // Legend
