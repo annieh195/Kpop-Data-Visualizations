@@ -368,6 +368,31 @@ Promise.all([
                 .transition()
                 .duration(1000)
                 .attr("d", line);
+
+            if (keyword === "kpop") {
+                const datesToPlot = [
+                    { month: 6, year: 2012, text: '“GANGNAM STYLE” or “강남스타일” by PSY was released on July 15, 2012 on YouTube. As of March 1, 2024, the video has 5,073,695,257 views on YouTube. This song is still the most viewed video/song by a K-pop artist on YouTube today.'}, // July 2012
+                    { month: 8, year: 2018, text: 'BTS spoke at the UN for the 1st time on September 24, 2018.' }, // September 2018
+                    { month: 4, year: 2019, text: 'On May 1, 2019, BTS attended the Billboard Music Awards for the 3rd time and won the Top Social Artist and Top Duo/Group awards.' }  // May 2019
+                ];
+
+                datesToPlot.forEach(dateInfo => {
+                    const dateToPlot = new Date(dateInfo.year, dateInfo.month);
+                    const dataForDate = filteredData.find(d => d.Date.getMonth() === dateToPlot.getMonth() && d.Date.getFullYear() === dateToPlot.getFullYear());
+                    if (dataForDate) {
+                        svgChart.selectAll(".dot-" + dateInfo.year + "-" + dateInfo.month)
+                            .data([dataForDate])
+                            .join("circle")
+                            .attr("class", "dot dot-" + dateInfo.year + "-" + dateInfo.month)
+                            .attr("cx", d => x(d.Date))
+                            .attr("cy", d => y(+d[keyword]))
+                            .attr("r", 5)
+                            .style("fill", "red")
+                            .transition()
+                            .duration(1000);
+                    }
+                });
+            }
         });
     }
     // Add legend
