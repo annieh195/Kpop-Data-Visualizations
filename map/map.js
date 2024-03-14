@@ -15,9 +15,9 @@ Promise.all([
         mapWidth = width / 2 + mapMargin.left - mapMargin.right,
         mapHeight = height - mapMargin.top - mapMargin.bottom;
     // Chart's dimensions
-    const chartMargin = { top: 30, right: 50, bottom: 20, left: 60 };
-    const chartWidth = width / 2 - chartMargin.left - chartMargin.right;
-    const chartHeight = height - chartMargin.top - (5 * chartMargin.bottom);
+    const chartMargin = { top: 60, right: 50, bottom: 20, left: 60 };
+    const chartWidth = width /2.3 - chartMargin.left - chartMargin.right;
+    const chartHeight = height - chartMargin.top - (5.5 * chartMargin.bottom);
 
     // Define color scale for legend at discrete points
     const ticks = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
@@ -32,17 +32,53 @@ Promise.all([
         .attr("width", mapWidth + mapMargin.left + mapMargin.right)
         .attr("height", mapHeight + mapMargin.top + mapMargin.bottom)
         .style("position", "absolute");
+    svg.append("text")
+        .attr("x", 20)
+        .attr("y", 50)
+        .attr("font-size", "35px")
+        .style("fill", "black")
+        .text("K-Pop Revolution: The Impact on the US Music Industry");
+    svg.append("text")
+        .attr("x", 40)
+        .attr("y", 115)
+        .attr("font-size", "18px")
+        .style("fill", "black")
+        .text("Choropleth Map of Relative Interest in \"kpop\" Over Time w/ Concert Occurrences");
+    svg.append("text")
+        .attr("x", 40)
+        .attr("y", 135)
+        .attr("font-size", "18px")
+        .style("fill", "black")
+        .text("for 15 Industry Leading K-Pop Groups");
+
     const svgChart = d3.select("#chart")
         .append("svg")
-        .attr("width", width)
-        .attr("height", chartHeight + chartMargin.top + chartMargin.bottom)
+        .attr("width", width/2)
+        .style("position", "absolute")
+        .style("top", "100px")
+        .style("left", "710px")
+        .attr("height", chartHeight + chartMargin.top + chartMargin.bottom+ 20)
         .append("g")
-        .attr("transform", `translate(${chartMargin.left + mapWidth},${chartMargin.top})`);
+        .attr("transform", `translate(${chartMargin.left + mapWidth-680},${chartMargin.top-15})`)
+        .attr("width", width/2-50);
+
+    svgChart.append("text")
+        .attr("x", -90)
+        .attr("y", -20)
+        .attr("font-size", "18px")
+        .style("fill", "black")
+        .text("Multiline Chart of Online Search Volume for 15 Industry Leading K-Pop Groups Over Time");
+    svgChart.append("text")
+        .attr("x", 80)
+        .attr("y", 610)
+        .attr("font-size", "18px")
+        .style("fill", "black")
+        .text("Volume of Google Searches in a Month vs Date by Month");
 
     // Define projection and path generator
     var projection = d3.geoAlbersUsa()
-        .translate([mapWidth / 2, mapHeight / 2])
-        .scale(1000);
+        .translate([mapWidth / 2-15, mapHeight / 2+55])
+        .scale(950);
     var path = d3.geoPath().projection(projection);
 
     // CSV with states and interest values by months
@@ -86,8 +122,7 @@ Promise.all([
     // Color mapping for each of the 15 selected K-pop groups
     const kpopGroupColorScale = d3.scaleOrdinal() // Used colorbrewer qualitative color palette
         .domain(["BTS", "BLACKPINK", "PSY", "EXO", "DAY6", "Girls' Generation", "BIGBANG", "MAMAMOO", "MOMOLAND", "GOT7", "Stray Kids", "TOMORROW X TOGETHER", "ITZY", "ENHYPEN", "(G)I-DLE", "The Beatles", "kpop"])
-        .range(["#cab2d6", "#fb9a99", "#02818a", "#ffff99", "#a6cee3", "#d53e4f", "#fdbf6f", "#1f78b4", "#b15928", "#b2df8a", "#e31a1c", "#33a02c", "#c51b7d", "#ff7f00", "#7e00bf", "#d9d9d9", "#006d2c"]);
-
+        .range(["#cab2d6","#fb9a99","#008080","#ffff99","#a6cee3","#d53e4f","#fdbf6f","#1f78b4","#b15928","#b2df8a","#e31a1c","#33a02c","#c51b7d","#ff7f00","#7e00bf","#d9d9d9","#006d2c"]);
     // Maps to colored PNG file for each Artist's associated music symbol, to display concert location
     const kpopConcertColorScale = d3.scaleOrdinal() // Used LUNAPIC web editor to edit music-note.png into kpopGroupColorScale versions
         .domain(["BTS", "BLACKPINK", "PSY", "EXO", "DAY6", "Girls' Generation", "BIGBANG", "MAMAMOO", "MOMOLAND", "GOT7", "Stray Kids", "TOMORROW X TOGETHER", "ITZY", "ENHYPEN", "(G)I-DLE"])
@@ -104,7 +139,8 @@ Promise.all([
     // Add x-axis
     const xAxisElement = svgChart.append("g")
         .attr("class", "x-axis")
-        .attr("transform", `translate(0,${chartHeight})`);
+        .attr("transform", `translate(0,${chartHeight})`)
+        ;
 
     // Add y-axis
     const yAxisElement = svgChart.append("g")
@@ -115,8 +151,8 @@ Promise.all([
     y.domain([0, d3.max(chartData, d => d3.max(selectedKeywords, key => +d[key]))]);
 
     // Update axes with transition
-    xAxisElement.transition().duration(1000).call(xAxis);
-    yAxisElement.transition().duration(1000).call(yAxis);
+    xAxisElement.transition().duration(500).call(xAxis);
+    yAxisElement.transition().duration(500).call(yAxis);
 
     // Plot where concerts occurred using latitude and longitude coordinates
     function plotConcerts(month) {
@@ -130,8 +166,6 @@ Promise.all([
             .data(filteredConcerts)
             .enter().append("image")
             .attr("xlink:href", function (d) {
-                console.log(d.Artist);
-                console.log(kpopConcertColorScale(d.Artist));
                 return kpopConcertColorScale(d.Artist);
             }) // Music note symbol to represent concert occurence, makes choropleth map an advanced visualization per Professor Liu
             .attr("class", "concert")
@@ -143,11 +177,9 @@ Promise.all([
             .on("mouseover", function (d) {
                 tooltip.transition()
                     .duration(200)
-                    .style("opacity", .9);
+                    .style("opacity", 0.9);
                 tooltip.html(d.ConcertInfo)
                     .style("background-color", function () { // Tooltip color based on K-Pop group color
-                        console.log(d.Artist);
-                        console.log(kpopGroupColorScale(d.Artist));
                         return kpopGroupColorScale(d.Artist);
                     })
                     .style("border", "1px #a6cee3")
@@ -176,10 +208,10 @@ Promise.all([
             .attr('stroke', 'black')
             .on("mouseover", function (d) {
                 tooltip.transition()
-                    .duration(200)
+                    .duration(100)
                     .style("opacity", .9);
-                tooltip.html(d.properties.name)
-                    // tooltip.html(d.properties.name + "<br/>" + (interestDataByMonth[month][d.properties.name] || "0"))
+                console.log(d.properties);
+                    tooltip.html(d.properties.name + "<br/>" + (interestDataByMonth[month][d.properties.name] || "0"))
                     .style("background-color", "#f0f0f0")
                     .style("border", "1px solid #525252")
                     .style("font-size", "18px")
@@ -263,12 +295,12 @@ Promise.all([
 
         const g = svg.append("g")
             .attr("id", "legend")
-            .attr("transform", "translate(" + [mapWidth * 0.40, 30] + ")")
+            .attr("transform", "translate(" + [mapWidth * 0.40, 180] + ")")
 
         g.append("text")
             .attr("x", 170)
-            .attr("y", 70)
-            .attr("font-size", "18px")
+            .attr("y",-5)
+            .attr("font-size", "15px")
             .style("fill", "black")
             .text("Interest Value Legend");
 
@@ -293,7 +325,7 @@ Promise.all([
     const rendGroupLegend = () => { // To display color legend, used for both vis
         const svg = d3.select("svg");
         legendData = kpopGroupColorScale.domain();
-        console.log(legendData)
+        //console.log(legendData)
 
         const legend = svg.append("g")
             .attr("class", "legend")
@@ -325,22 +357,13 @@ Promise.all([
     }
     //rendGroupLegend();
 
-    // Time Slider
-
-    // var slider = d3.select("#slider")
-    //     .append("svg")
-    //     .attr("width", mapWidth)
-    //     .attr("height", 500)
-    //     .append("g")
-    //     .attr("transform", "translate(" + [mapWidth / 16, 10] + ")");
-
     var slider = d3.select("#slider")
         .append("svg")
-        .attr("width", mapWidth)
-        .attr("height", 500)
+        .attr("width", mapWidth-100)
+        .attr("height", 88)
         .style("position", "absolute")
-        .style("top", "800px")
-        .style("left", "500px")
+        .style("top", "680px")
+        .style("left", "45px")
         .append("g")
         .attr("transform", "translate(" + [mapWidth / 16, 10] + ")");
 
@@ -358,7 +381,7 @@ Promise.all([
         .attr("font-size", "18px");
 
     slider.append("text") // Initialize feature title
-        .attr("x", mapWidth * 0.22)
+        .attr("x", mapWidth * 0.16)
         .attr("y", 65)
         .attr("font-size", "18px")
         .style("fill", "black")
@@ -378,12 +401,13 @@ Promise.all([
             slider.selectAll("text").remove();
 
             slider.append("text") // <Make feature title persistent despite "onchange" removing all text
-                .attr("x", mapWidth * 0.22)
+                .attr("x", mapWidth * 0.16)
                 .attr("y", 65)
                 .attr("font-size", "18px")
                 .style("fill", "black")
                 .text("Time Slider: From Jan 2012 to Feb 2024");
 
+            //console.log(selectedMonth.slice(0));
             slider.append("text")
                 .attr("x", monthScale(val))
                 .attr("y", 40)
@@ -407,11 +431,6 @@ Promise.all([
                 .transition()
                 .duration(1000);
         });
-
-        // console.log(filteredData)
-        // console.log(selectedMonth)
-        // console.log(chartData)
-
         // Update x and y scales domain
         // x.domain(d3.extent(data, d => d.Date));
         y.domain([0, d3.max(filteredData, d => d3.max(selectedKeywords, key => +d[key]))]);
@@ -428,7 +447,7 @@ Promise.all([
                 .y(d => y(+d[keyword]));
 
 
-            console.log(typeof (keyword))
+            //console.log(typeof (keyword))
             svgChart.selectAll(".line-" + keyword.replace(" ", "").replace("'", ""))
                 .data([filteredData])
                 .join("path")
@@ -467,23 +486,29 @@ Promise.all([
         });
     }
     // Add legend
-    const legend = svgChart.selectAll(".legend")
+    svgChart.append("text")
+        .attr("x", -145)
+        .attr("y", 220)
+        .attr("font-size", "15px")
+        .text("Group Legend");
+
+    const colorLegend = svgChart.selectAll(".legend")
         .data(keywords)
         .enter().append("g")
         .attr("class", "legend")
-        .attr("transform", (d, i) => `translate(0,${i * 20})`)
+        .attr("transform", (d, i) => `translate(-615,${i * 20+230})`)
         .on("click", function (event, d) {
-            console.log(keywords[d])
+            //console.log(keywords[d])
             if (selectedKeywords.includes(keywords[d])) {
                 selectedKeywords = selectedKeywords.filter(item => item !== keywords[d]);
                 notSelectedKeywords.push(keywords[d]);
-                console.log(`Removed ${keywords[d]}`);
-                console.log(selectedKeywords);
+                //console.log(`Removed ${keywords[d]}`);
+                //console.log(selectedKeywords);
             } else {
                 selectedKeywords.push(keywords[d]);
-                console.log(`Added ${keywords[d]}`);
+                //console.log(`Added ${keywords[d]}`);
                 notSelectedKeywords = notSelectedKeywords.filter(item => item !== keywords[d]);
-                console.log(selectedKeywords);
+                //console.log(selectedKeywords);
             }
             // Redraw lines and update axes based on updated selectedKeywords
             drawLines(selectedKeywords, selectedMonth);
@@ -496,19 +521,19 @@ Promise.all([
             legendRect.style("opacity", newOpacity);
             legendText.style("opacity", newOpacity);
         });
-
-    legend.append("rect")
+    colorLegend.append("rect")
         .attr("x", chartWidth - 18)
         .attr("width", 18)
         .attr("height", 18)
         .style("fill", d => kpopGroupColorScale(d));
-
-    legend.append("text")
-        .attr("x", chartWidth - 24)
+    
+    colorLegend.append("text")
+        .attr("x", chartWidth-25)
         .attr("y", 9)
         .attr("dy", ".35em")
         .style("text-anchor", "end")
         .text(d => d);
+    
 }).catch(function (error) {
     console.error('Error loading or processing data:', error);
 });
