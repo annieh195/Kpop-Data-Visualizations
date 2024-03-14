@@ -103,9 +103,9 @@ Promise.all([
     // Extract column names for keywords
     const keywords = chartData.columns.slice(1);
 
-    // Selected data
-    let selectedKeywords = keywords;
-    let notSelectedKeywords = [];
+    // Initially set the selected data to just "kpop" for the author-driven stage
+    let selectedKeywords = ["kpop"];
+    let notSelectedKeywords = keywords.filter(keyword => !selectedKeywords.includes(keyword));
 
     // Set up scales and axes
     const x = d3.scaleTime().range([0, chartWidth]);
@@ -139,8 +139,7 @@ Promise.all([
     // Add x-axis
     const xAxisElement = svgChart.append("g")
         .attr("class", "x-axis")
-        .attr("transform", `translate(0,${chartHeight})`)
-        ;
+        .attr("transform", `translate(0,${chartHeight})`);
 
     // Add y-axis
     const yAxisElement = svgChart.append("g")
@@ -421,6 +420,7 @@ Promise.all([
     // Show first month view
     updateMap(Object.keys(interestDataByMonth)[0]);
 
+    let autoMode = true;
     // Function to draw lines and update axes
     function drawLines(selectedKeywords, selectedMonth) {
         const selectedDate = new Date(selectedMonth)
@@ -431,13 +431,18 @@ Promise.all([
                 .transition()
                 .duration(1000);
         });
-        // Update x and y scales domain
-        // x.domain(d3.extent(data, d => d.Date));
-        y.domain([0, d3.max(filteredData, d => d3.max(selectedKeywords, key => +d[key]))]);
 
-        // Update axes with transition
-        xAxisElement.transition().duration(1000).call(xAxis);
-        yAxisElement.transition().duration(1000).call(yAxis);
+        // Update y scales domain
+        if (autoMode) {
+            selectedKeywords = ["kpop"];
+            y.domain([0, d3.max(0, selectedKeywords)]);
+        } else {
+            selectedKeywords = keywords.filter(keyword => !notSelectedKeywords.includes(keyword));
+            y.domain([0, d3.max(filteredData, d => d3.max(selectedKeywords, key => +d[key]))]);
+            // Update axes with transition
+            xAxisElement.transition().duration(1000).call(xAxis);
+            yAxisElement.transition().duration(1000).call(yAxis);
+        }
 
         // Plot each keyword as a line with transition
         selectedKeywords.forEach(keyword => {
@@ -446,8 +451,6 @@ Promise.all([
                 .x(d => x(d.Date))
                 .y(d => y(+d[keyword]));
 
-
-            //console.log(typeof (keyword))
             svgChart.selectAll(".line-" + keyword.replace(" ", "").replace("'", ""))
                 .data([filteredData])
                 .join("path")
@@ -461,7 +464,7 @@ Promise.all([
 
             if (keyword === "kpop") {
                 const datesToPlot = [
-                    { month: 6, year: 2012, text: '“GANGNAM STYLE” or “강남스타일” by PSY was released on July 15, 2012 on YouTube. As of March 1, 2024, the video has 5,073,695,257 views on YouTube. This song is still the most viewed video/song by a K-pop artist on YouTube today.' }, // July 2012
+                    { month: 6, year: 2012, text: '“GANGNAM STYLE” or “강남스타일” by PSY was released on July 15, 2012 on YouTube. As of March 1, 2024, the video has 5,073,695,257 views on YouTube. This song is still the most viewed video/song by a K-pop artist on YouTube today.'}, // July 2012
                     { month: 8, year: 2018, text: 'BTS spoke at the UN for the 1st time on September 24, 2018.' }, // September 2018
                     { month: 4, year: 2019, text: 'On May 1, 2019, BTS attended the Billboard Music Awards for the 3rd time and won the Top Social Artist and Top Duo/Group awards.' }  // May 2019
                 ];
@@ -477,13 +480,17 @@ Promise.all([
                             .attr("cx", d => x(d.Date))
                             .attr("cy", d => y(+d[keyword]))
                             .attr("r", 5)
-                            .style("fill", "red")
-                            .transition()
-                            .duration(1000);
+                            .style("fill", "red");
                     }
                 });
             }
         });
+        // Update legend item opacity based on selectedKeywords
+        colorLegend.selectAll("rect")
+            .style("opacity", d => selectedKeywords.includes(d) ? 1 : 0.3);
+
+        colorLegend.selectAll("text")
+            .style("opacity", d => selectedKeywords.includes(d) ? 1 : 0.3);
     }
     // Add legend
     svgChart.append("text")
@@ -498,17 +505,12 @@ Promise.all([
         .attr("class", "legend")
         .attr("transform", (d, i) => `translate(-615,${i * 20+230})`)
         .on("click", function (event, d) {
-            //console.log(keywords[d])
             if (selectedKeywords.includes(keywords[d])) {
                 selectedKeywords = selectedKeywords.filter(item => item !== keywords[d]);
                 notSelectedKeywords.push(keywords[d]);
-                //console.log(`Removed ${keywords[d]}`);
-                //console.log(selectedKeywords);
             } else {
                 selectedKeywords.push(keywords[d]);
-                //console.log(`Added ${keywords[d]}`);
                 notSelectedKeywords = notSelectedKeywords.filter(item => item !== keywords[d]);
-                //console.log(selectedKeywords);
             }
             // Redraw lines and update axes based on updated selectedKeywords
             drawLines(selectedKeywords, selectedMonth);
@@ -521,19 +523,105 @@ Promise.all([
             legendRect.style("opacity", newOpacity);
             legendText.style("opacity", newOpacity);
         });
-    colorLegend.append("rect")
-        .attr("x", chartWidth - 18)
-        .attr("width", 18)
-        .attr("height", 18)
-        .style("fill", d => kpopGroupColorScale(d));
+        colorLegend.append("rect")
+            .attr("x", chartWidth - 18)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", d => kpopGroupColorScale(d))
+            .style("opacity", d => selectedKeywords.includes(d) ? 1 : 0.3); // Adjust opacity based on inclusion in selectedKeywords
     
-    colorLegend.append("text")
-        .attr("x", chartWidth-25)
-        .attr("y", 9)
-        .attr("dy", ".35em")
-        .style("text-anchor", "end")
-        .text(d => d);
+        colorLegend.append("text")
+            .attr("x", chartWidth - 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(d => d)
+            .style("opacity", d => selectedKeywords.includes(d) ? 1 : 0.3); // Adjust opacity based on inclusion in selectedKeywords
     
+
+    // Define a function to automatically increment the slider
+    function autoIncrementSlider() {
+        const sliderValue = sliderControl.value();
+        const maxValue = sliderControl.max();
+        if (sliderValue < maxValue) {
+            sliderControl.value(sliderValue + 1);
+            const val = sliderControl.value();
+            const monthIndex = Math.round(val) - 1;
+            const selectedMonth = months[monthIndex];
+
+            // Clear all lines except for the kpop line
+            svgChart.selectAll(".line").remove();
+
+            // Redraw only the kpop line
+            drawKpopLine(selectedMonth);
+
+            // Update the tick text
+            slider.selectAll("text").remove();
+            const tickText = slider.append("text")
+                .attr("x", monthScale(val))
+                .attr("y", 40)
+                .text(selectedMonth.slice(3, 15).replace("01 ", ""))
+                .attr("text-anchor", "middle")
+                .attr("font-size", "12px");
+        } else {
+            clearInterval(intervalId); // Stop auto-incrementing when reaching the end
+            autoMode = false;
+            // selectedKeywords = keywords;
+            document.getElementById("interactButton").style.display = "inline";
+            document.getElementById("replayButton").style.display = "inline";
+        }
+    }
+
+    // Function to draw only the kpop line
+    function drawKpopLine(selectedMonth) {
+        const selectedDate = new Date(selectedMonth);
+        const filteredData = chartData.filter(d => d.Date <= selectedDate);
+
+        // Update y scale domain based on filtered data
+        y.domain([0, d3.max(chartData, d => +d["kpop"])]);
+
+        // Update y-axis without transition
+        yAxisElement.call(yAxis);
+
+        // Plot the kpop line with transition
+        const kpopLine = d3.line()
+            .x(d => x(d.Date))
+            .y(d => y(+d["kpop"]));
+
+        svgChart.append("path")
+            .datum(filteredData)
+            .attr("class", "line line-kpop")
+            .attr("fill", "none")
+            .attr("stroke", kpopGroupColorScale("kpop"))
+            .attr("stroke-width", 5)
+            .attr("d", kpopLine);
+    }
+
+    // Set up interval for automatic slider increment
+    let intervalId = setInterval(autoIncrementSlider, 100);
+
+    // Add a replay button event listener
+    document.getElementById('replayButton').addEventListener('click', function() {
+        clearInterval(intervalId); // Clear any existing interval
+        autoMode = true;
+        selectedKeywords = ["kpop"]; // Reset selectedKeywords to initial state
+        notSelectedKeywords = keywords.filter(keyword => !selectedKeywords.includes(keyword));
+        sliderControl.value(1); // Reset slider to initial position
+        autoIncrementSlider(); // Redraw the chart
+        intervalId = setInterval(autoIncrementSlider, 100); // Restart auto-incrementing
+        document.getElementById("interactButton").style.display = "none";
+    });
+    // Add an event listener for the interact button
+    document.getElementById('interactButton').addEventListener('click', function() {
+        console.log("hi")
+        clearInterval(intervalId); // Clear any existing interval
+        autoMode = false;
+        selectedKeywords = keywords; // Show all keywords
+        notSelectedKeywords = [];
+        sliderControl.value(1); // Reset slider to initial position
+        slider.selectAll("text").remove(); // Remove slider text
+        document.getElementById("interactButton").style.display = "none";
+    });
 }).catch(function (error) {
     console.error('Error loading or processing data:', error);
 });
