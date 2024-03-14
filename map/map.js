@@ -2,16 +2,22 @@ Promise.all([
     d3.json('us_states.topojson'),
     d3.json('us.json'),
     d3.csv('interest_over_time.csv'),
-    d3.csv('concerts.csv')
-]).then(function ([us, data, interestData, concertData]) {
+    d3.csv('concerts.csv'),
+    d3.csv("chart_data.csv")
+]).then(function ([us, data, interestData, concertData, chartData]) {
     var states = topojson.feature(us, us.objects.us_states).features;
 
-    var width = window.innerWidth*0.85,
+    // Dimensions
+    var width = window.innerWidth,
         height = window.innerHeight*0.85;
-
-    var mapMargin = { top: 0, left: 0, right: 0, bottom: 0 },
-        mapWidth = width - mapMargin.left - mapMargin.right,
+    // Map's dimensions
+    var mapMargin = { top: 0, left: 30, right: 0, bottom: 0 },
+        mapWidth = width/2 + mapMargin.left - mapMargin.right,
         mapHeight = height - mapMargin.top - mapMargin.bottom;
+    // Chart's dimensions
+    const chartMargin = { top: 30, right: 50, bottom: 20, left: 60 };
+    const chartWidth = width/2 - chartMargin.left - chartMargin.right;
+    const chartHeight = height - chartMargin.top - (5 * chartMargin.bottom);
 
     // Define color scale for legend at discrete points
     const ticks = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
@@ -20,14 +26,21 @@ Promise.all([
         .domain(ticks)
         .range(colors);
 
+    // Append SVG
     var svg = d3.select("#map")
         .append("svg")
         .attr("width", mapWidth + mapMargin.left + mapMargin.right)
         .attr("height", mapHeight + mapMargin.top + mapMargin.bottom);
+    const svgChart = d3.select("#chart")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", chartHeight + chartMargin.top + chartMargin.bottom)
+        .append("g")
+        .attr("transform", `translate(${chartMargin.left + mapWidth},${chartMargin.top})`);
 
     // Define projection and path generator
     var projection = d3.geoAlbersUsa()
-        .translate([mapWidth / 2.5, mapHeight / 2])
+        .translate([mapWidth/2, mapHeight / 2])
         .scale(1000);
     var path = d3.geoPath().projection(projection);
 
@@ -42,6 +55,24 @@ Promise.all([
             }
         }
     });
+
+    // Parse dates
+    const parseDate = d3.timeParse("%y-%b");
+    chartData.forEach(d => {
+        const dateParts = d.Date.split("-");
+        d.Date = parseDate(`${dateParts[0]}-${dateParts[1]}`);
+    });
+    
+    // Extract column names for keywords
+    const keywords = chartData.columns.slice(1);
+
+    // Selected data
+    let selectedKeywords = keywords;
+    let notSelectedKeywords = [];
+
+    // Set up scales and axes
+    const x = d3.scaleTime().range([0, chartWidth]);
+    const y = d3.scaleLinear().range([chartHeight, 0]);
 
     // Color scale for interest values over time
     var colorScale = d3.scaleSequential(d3.interpolateGreys)
@@ -65,6 +96,26 @@ Promise.all([
     var tooltip = d3.select("#map").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
+
+    const xAxis = d3.axisBottom(x);
+    const yAxis = d3.axisLeft(y);
+
+    // Add x-axis
+    const xAxisElement = svgChart.append("g")
+        .attr("class", "x-axis")
+        .attr("transform", `translate(0,${chartHeight})`);
+
+    // Add y-axis
+    const yAxisElement = svgChart.append("g")
+        .attr("class", "y-axis");
+        
+    // Initialize x and y scales domain
+    x.domain(d3.extent(chartData, d => d.Date));
+    y.domain([0, d3.max(chartData, d => d3.max(selectedKeywords, key => +d[key]))]);
+
+    // Update axes with transition
+    xAxisElement.transition().duration(1000).call(xAxis);
+    yAxisElement.transition().duration(1000).call(yAxis);
     
     // Plot where concerts occurred using latitude and longitude coordinates
     function plotConcerts(month) {
@@ -242,14 +293,16 @@ Promise.all([
         .style("fill", "black")
         .text("Time Slider: From Jan 2012 to Feb 2024");
 
+    var selectedMonth;
     var sliderControl = d3.sliderBottom(monthScale)
         .ticks(months.length)
         .tickFormat(d3.format(""))
 
         .on('onchange', function (val) {
             var monthIndex = Math.round(val) - 1;
-            var selectedMonth = months[monthIndex];
+            selectedMonth = months[monthIndex];
             updateMap(selectedMonth);
+            drawLines(selectedKeywords, selectedMonth);
 
             slider.selectAll("text").remove();
 
@@ -273,6 +326,93 @@ Promise.all([
     // Show first month view
     updateMap(Object.keys(interestDataByMonth)[0]);
 
+    // Function to draw lines and update axes
+    function drawLines(selectedKeywords, selectedMonth) {
+        const selectedDate = new Date(selectedMonth)
+        const filteredData = chartData.filter(d => d.Date <= selectedDate);
+        notSelectedKeywords.forEach(keyword => {
+            // Remove existing lines
+            svgChart.selectAll(".line-" + keyword.replace(" ", "").replace("'", "")).remove()
+                .transition()
+                .duration(1000);
+        });
+
+        // console.log(filteredData)
+        // console.log(selectedMonth)
+        // console.log(chartData)
+
+        // Update x and y scales domain
+        // x.domain(d3.extent(data, d => d.Date));
+        y.domain([0, d3.max(filteredData, d => d3.max(selectedKeywords, key => +d[key]))]);
+
+        // Update axes with transition
+        xAxisElement.transition().duration(1000).call(xAxis);
+        yAxisElement.transition().duration(1000).call(yAxis);
+
+        // Plot each keyword as a line with transition
+        selectedKeywords.forEach(keyword => {
+            // Define line function inside the loop to properly reference the current keyword
+            const line = d3.line()
+                .x(d => x(d.Date))
+                .y(d => y(+d[keyword]));
+            
+
+            console.log(typeof(keyword))
+            svgChart.selectAll(".line-" + keyword.replace(" ", "").replace("'", ""))
+                .data([filteredData])
+                .join("path")
+                .attr("class", "line line-" + keyword.replace(" ", "").replace("'", ""))
+                .attr("fill", "none")
+                .attr("stroke", kpopGroupColorScale(keyword))
+                .attr("stroke-width", keyword === "kpop" ? 5 : 2)
+                .transition()
+                .duration(1000)
+                .attr("d", line);
+        });
+    }
+    // Add legend
+    const legend = svgChart.selectAll(".legend")
+        .data(keywords)
+        .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", (d, i) => `translate(0,${i * 20})`)
+        .on("click", function(event, d){
+            console.log(keywords[d])
+            if (selectedKeywords.includes(keywords[d])) {
+                selectedKeywords = selectedKeywords.filter(item => item !== keywords[d]);
+                notSelectedKeywords.push(keywords[d]);
+                console.log(`Removed ${keywords[d]}`);
+                console.log(selectedKeywords);
+            } else {
+                selectedKeywords.push(keywords[d]);
+                console.log(`Added ${keywords[d]}`);
+                notSelectedKeywords = notSelectedKeywords.filter(item => item !== keywords[d]);
+                console.log(selectedKeywords);
+            }
+            // Redraw lines and update axes based on updated selectedKeywords
+            drawLines(selectedKeywords, selectedMonth);
+
+            // Toggle opacity of legend box and text
+            const legendRect = d3.select(this).select("rect");
+            const legendText = d3.select(this).select("text");
+            const currentOpacity = parseFloat(legendRect.style("opacity") || 1);
+            const newOpacity = currentOpacity === 1 ? 0.3 : 1;
+            legendRect.style("opacity", newOpacity);
+            legendText.style("opacity", newOpacity);
+        });
+
+    legend.append("rect")
+        .attr("x", chartWidth - 18)
+        .attr("width", 18)
+        .attr("height", 18)
+        .style("fill", d => kpopGroupColorScale(d));
+
+    legend.append("text")
+        .attr("x", chartWidth - 24)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        .text(d => d);
 }).catch(function (error) {
     console.error('Error loading or processing data:', error);
 });
