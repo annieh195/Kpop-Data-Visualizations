@@ -169,8 +169,8 @@ Promise.all([
                 return kpopConcertColorScale(d.Artist);
             }) // Music note symbol to represent concert occurence, makes choropleth map an advanced visualization per Professor Liu
             .attr("class", "concert")
-            .attr("x", function (d) { return projection([+d.Longitude, +d.Latitude])[0]; })
-            .attr("y", function (d) { return projection([+d.Longitude, +d.Latitude])[1]; })
+            .attr("x", function (d) { return projection([+d.Longitude, +d.Latitude])[0]-12.5; })
+            .attr("y", function (d) { return projection([+d.Longitude, +d.Latitude])[1]-12.5; })
             .attr("width", 25)
             .attr("height", 25)
             .style("opacity", 1)
