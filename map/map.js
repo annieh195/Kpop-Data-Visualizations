@@ -9,14 +9,14 @@ Promise.all([
 
     // Dimensions
     var width = window.innerWidth,
-        height = window.innerHeight*0.85;
+        height = window.innerHeight * 0.85;
     // Map's dimensions
     var mapMargin = { top: 0, left: 30, right: 0, bottom: 0 },
-        mapWidth = width/2 + mapMargin.left - mapMargin.right,
+        mapWidth = width / 2 + mapMargin.left - mapMargin.right,
         mapHeight = height - mapMargin.top - mapMargin.bottom;
     // Chart's dimensions
     const chartMargin = { top: 30, right: 50, bottom: 20, left: 60 };
-    const chartWidth = width/2 - chartMargin.left - chartMargin.right;
+    const chartWidth = width / 2 - chartMargin.left - chartMargin.right;
     const chartHeight = height - chartMargin.top - (5 * chartMargin.bottom);
 
     // Define color scale for legend at discrete points
@@ -30,7 +30,8 @@ Promise.all([
     var svg = d3.select("#map")
         .append("svg")
         .attr("width", mapWidth + mapMargin.left + mapMargin.right)
-        .attr("height", mapHeight + mapMargin.top + mapMargin.bottom);
+        .attr("height", mapHeight + mapMargin.top + mapMargin.bottom)
+        .style("position", "absolute");
     const svgChart = d3.select("#chart")
         .append("svg")
         .attr("width", width)
@@ -40,7 +41,7 @@ Promise.all([
 
     // Define projection and path generator
     var projection = d3.geoAlbersUsa()
-        .translate([mapWidth/2, mapHeight / 2])
+        .translate([mapWidth / 2, mapHeight / 2])
         .scale(1000);
     var path = d3.geoPath().projection(projection);
 
@@ -62,7 +63,7 @@ Promise.all([
         const dateParts = d.Date.split("-");
         d.Date = parseDate(`${dateParts[0]}-${dateParts[1]}`);
     });
-    
+
     // Extract column names for keywords
     const keywords = chartData.columns.slice(1);
 
@@ -85,12 +86,12 @@ Promise.all([
     // Color mapping for each of the 15 selected K-pop groups
     const kpopGroupColorScale = d3.scaleOrdinal() // Used colorbrewer qualitative color palette
         .domain(["BTS", "BLACKPINK", "PSY", "EXO", "DAY6", "Girls' Generation", "BIGBANG", "MAMAMOO", "MOMOLAND", "GOT7", "Stray Kids", "TOMORROW X TOGETHER", "ITZY", "ENHYPEN", "(G)I-DLE", "The Beatles", "kpop"])
-        .range(["#cab2d6","#fb9a99","#02818a","#ffff99","#a6cee3","#d53e4f","#fdbf6f","#1f78b4","#b15928","#b2df8a","#e31a1c","#33a02c","#c51b7d","#ff7f00","#7e00bf","#d9d9d9","#006d2c"]);
-    
+        .range(["#cab2d6", "#fb9a99", "#02818a", "#ffff99", "#a6cee3", "#d53e4f", "#fdbf6f", "#1f78b4", "#b15928", "#b2df8a", "#e31a1c", "#33a02c", "#c51b7d", "#ff7f00", "#7e00bf", "#d9d9d9", "#006d2c"]);
+
     // Maps to colored PNG file for each Artist's associated music symbol, to display concert location
     const kpopConcertColorScale = d3.scaleOrdinal() // Used LUNAPIC web editor to edit music-note.png into kpopGroupColorScale versions
         .domain(["BTS", "BLACKPINK", "PSY", "EXO", "DAY6", "Girls' Generation", "BIGBANG", "MAMAMOO", "MOMOLAND", "GOT7", "Stray Kids", "TOMORROW X TOGETHER", "ITZY", "ENHYPEN", "(G)I-DLE"])
-        .range(["./symbols/BTS.png","./symbols/BLACKPINK.png","./symbols/PSY.png","./symbols/EXO.png","./symbols/DAY6.png","./symbols/GirlsGen.png","./symbols/BIGBANG.png","./symbols/MAMAMOO.png","./symbols/MOMOLAND.png","./symbols/GOT7.png","./symbols/SKZ.png","./symbols/TXT.png","./symbols/ITZY.png","./symbols/ENHYPEN.png","./symbols/GIDLE.png"]);
+        .range(["./symbols/BTS.png", "./symbols/BLACKPINK.png", "./symbols/PSY.png", "./symbols/EXO.png", "./symbols/DAY6.png", "./symbols/GirlsGen.png", "./symbols/BIGBANG.png", "./symbols/MAMAMOO.png", "./symbols/MOMOLAND.png", "./symbols/GOT7.png", "./symbols/SKZ.png", "./symbols/TXT.png", "./symbols/ITZY.png", "./symbols/ENHYPEN.png", "./symbols/GIDLE.png"]);
 
     // Tooltip for each state that shows interest
     var tooltip = d3.select("#map").append("div")
@@ -108,7 +109,7 @@ Promise.all([
     // Add y-axis
     const yAxisElement = svgChart.append("g")
         .attr("class", "y-axis");
-        
+
     // Initialize x and y scales domain
     x.domain(d3.extent(chartData, d => d.Date));
     y.domain([0, d3.max(chartData, d => d3.max(selectedKeywords, key => +d[key]))]);
@@ -116,7 +117,7 @@ Promise.all([
     // Update axes with transition
     xAxisElement.transition().duration(1000).call(xAxis);
     yAxisElement.transition().duration(1000).call(yAxis);
-    
+
     // Plot where concerts occurred using latitude and longitude coordinates
     function plotConcerts(month) {
         svg.selectAll(".concert").remove();
@@ -128,7 +129,7 @@ Promise.all([
         svg.selectAll(".concert")
             .data(filteredConcerts)
             .enter().append("image")
-            .attr("xlink:href", function(d){
+            .attr("xlink:href", function (d) {
                 console.log(d.Artist);
                 console.log(kpopConcertColorScale(d.Artist));
                 return kpopConcertColorScale(d.Artist);
@@ -144,7 +145,7 @@ Promise.all([
                     .duration(200)
                     .style("opacity", .9);
                 tooltip.html(d.ConcertInfo)
-                    .style("background-color", function(){ // Tooltip color based on K-Pop group color
+                    .style("background-color", function () { // Tooltip color based on K-Pop group color
                         console.log(d.Artist);
                         console.log(kpopGroupColorScale(d.Artist));
                         return kpopGroupColorScale(d.Artist);
@@ -172,12 +173,13 @@ Promise.all([
                 var interest = interestDataByMonth[month][d.properties.name];
                 return interest ? colorScale(interest) : 'white';
             })
-            .attr('stroke', 'white')
+            .attr('stroke', 'black')
             .on("mouseover", function (d) {
                 tooltip.transition()
                     .duration(200)
                     .style("opacity", .9);
-                tooltip.html(d.properties.name + "<br/>" + (interestDataByMonth[month][d.properties.name] || "0"))
+                tooltip.html(d.properties.name)
+                    // tooltip.html(d.properties.name + "<br/>" + (interestDataByMonth[month][d.properties.name] || "0"))
                     .style("background-color", "#f0f0f0")
                     .style("border", "1px solid #525252")
                     .style("font-size", "18px")
@@ -189,6 +191,64 @@ Promise.all([
                     .duration(500)
                     .style("opacity", 0);
             });
+
+        svg.selectAll(".state-label")
+            .data(states)
+            .join("text")
+            .attr("class", "state-label")
+            .attr("x", function (d) {
+                if (["Rhode Island", "Delaware"].includes(d.properties.name)) {
+                    return path.centroid(d)[0] + 35;
+                } else {
+                    return path.centroid(d)[0];
+                }
+            })
+            .attr("y", function (d) {
+                return path.centroid(d)[1];
+            })
+            .text(function (d) {
+                if (d.properties.name === "District of Columbia") {
+                    return "";
+                } else {
+                    var interest = interestDataByMonth[month][d.properties.name];
+                    return interest || "0";
+                }
+            })
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .style("font-size", "15px")
+            .style("fill", function (d) {
+                var interest = interestDataByMonth[month][d.properties.name];
+                if (["Rhode Island", "Delaware"].includes(d.properties.name)) {
+                    return "black";
+                } else {
+                    return interest < 50 ? "black" : "white";
+                }
+            });
+
+        svg.selectAll(".line")
+            .data(states)
+            .join("line")
+            .attr("class", "line")
+            .attr("x1", function (d) {
+                return path.centroid(d)[0];
+            })
+            .attr("y1", function (d) {
+                return path.centroid(d)[1];
+            })
+            .attr("x2", function (d) {
+                if (["Rhode Island", "Delaware"].includes(d.properties.name)) {
+                    return path.centroid(d)[0] + 25;
+                } else {
+                    return path.centroid(d)[0];
+                }
+            })
+            .attr("y2", function (d) {
+                return path.centroid(d)[1];
+            })
+            .attr("stroke", "black")
+            .attr("stroke-width", 1);
+
         plotConcerts(month); // Update concerts
     }
 
@@ -204,9 +264,9 @@ Promise.all([
         const g = svg.append("g")
             .attr("id", "legend")
             .attr("transform", "translate(" + [mapWidth * 0.40, 30] + ")")
-        
-        g.append("text")  
-            .attr("x", 170) 
+
+        g.append("text")
+            .attr("x", 170)
             .attr("y", 70)
             .attr("font-size", "18px")
             .style("fill", "black")
@@ -225,7 +285,7 @@ Promise.all([
             .selectAll(".tick text")
             .style("font-size", "16px")
             .style("text-anchor", "middle")
-            .attr("dx", 300/11/2+"px"); // center label in middle of each box
+            .attr("dx", 300 / 11 / 2 + "px"); // center label in middle of each box
     };
     rendInterestLegend();
 
@@ -234,10 +294,10 @@ Promise.all([
         const svg = d3.select("svg");
         legendData = kpopGroupColorScale.domain();
         console.log(legendData)
-    
+
         const legend = svg.append("g")
             .attr("class", "legend")
-            .attr("transform", `translate(${0.66*width}, ${height*0.40})`);
+            .attr("transform", `translate(${0.66 * width}, ${height * 0.40})`);
         legend.append("text")
             .text("K-Pop Group Color Legend")
             .attr("font-size", "18px")
@@ -248,46 +308,57 @@ Promise.all([
             const legendItem = legend.append("g")
                 .attr("class", "legend-item")
                 .attr("transform", `translate(0, ${y})`);
-    
+
             legendItem.append("rect")
                 .attr("width", 40)
                 .attr("height", 20)
                 .style("fill", kpopGroupColorScale(artist));
-    
+
             legendItem.append("text")
                 .attr("x", 45)
                 .attr("y", 5)
                 .attr("dy", "10")
                 .text(artist);
-    
-            y += 20; 
+
+            y += 20;
         }
     }
     //rendGroupLegend();
 
     // Time Slider
+
+    // var slider = d3.select("#slider")
+    //     .append("svg")
+    //     .attr("width", mapWidth)
+    //     .attr("height", 500)
+    //     .append("g")
+    //     .attr("transform", "translate(" + [mapWidth / 16, 10] + ")");
+
     var slider = d3.select("#slider")
         .append("svg")
         .attr("width", mapWidth)
-        .attr("height", 100)
+        .attr("height", 500)
+        .style("position", "absolute")
+        .style("top", "800px")
+        .style("left", "500px")
         .append("g")
         .attr("transform", "translate(" + [mapWidth / 16, 10] + ")");
 
     var months = Object.keys(interestDataByMonth);
     var monthScale = d3.scaleLinear()
         .domain([1, months.length])
-        .range([0, mapWidth/1.5])
+        .range([0, mapWidth / 1.5])
         .clamp(true);
-    
+
     slider.append("text") // Display inital default display of "Jan 2012" on slider, will be overwritten "onchange"
         .attr("x", monthScale(months[0]))
         .attr("y", 40)
         .text("Jan 2012")
         .attr("text-anchor", "middle")
         .attr("font-size", "18px");
-    
+
     slider.append("text") // Initialize feature title
-        .attr("x", mapWidth*0.22) 
+        .attr("x", mapWidth * 0.22)
         .attr("y", 65)
         .attr("font-size", "18px")
         .style("fill", "black")
@@ -307,7 +378,7 @@ Promise.all([
             slider.selectAll("text").remove();
 
             slider.append("text") // <Make feature title persistent despite "onchange" removing all text
-                .attr("x", mapWidth*0.22) 
+                .attr("x", mapWidth * 0.22)
                 .attr("y", 65)
                 .attr("font-size", "18px")
                 .style("fill", "black")
@@ -355,9 +426,9 @@ Promise.all([
             const line = d3.line()
                 .x(d => x(d.Date))
                 .y(d => y(+d[keyword]));
-            
 
-            console.log(typeof(keyword))
+
+            console.log(typeof (keyword))
             svgChart.selectAll(".line-" + keyword.replace(" ", "").replace("'", ""))
                 .data([filteredData])
                 .join("path")
@@ -371,7 +442,7 @@ Promise.all([
 
             if (keyword === "kpop") {
                 const datesToPlot = [
-                    { month: 6, year: 2012, text: '“GANGNAM STYLE” or “강남스타일” by PSY was released on July 15, 2012 on YouTube. As of March 1, 2024, the video has 5,073,695,257 views on YouTube. This song is still the most viewed video/song by a K-pop artist on YouTube today.'}, // July 2012
+                    { month: 6, year: 2012, text: '“GANGNAM STYLE” or “강남스타일” by PSY was released on July 15, 2012 on YouTube. As of March 1, 2024, the video has 5,073,695,257 views on YouTube. This song is still the most viewed video/song by a K-pop artist on YouTube today.' }, // July 2012
                     { month: 8, year: 2018, text: 'BTS spoke at the UN for the 1st time on September 24, 2018.' }, // September 2018
                     { month: 4, year: 2019, text: 'On May 1, 2019, BTS attended the Billboard Music Awards for the 3rd time and won the Top Social Artist and Top Duo/Group awards.' }  // May 2019
                 ];
@@ -401,7 +472,7 @@ Promise.all([
         .enter().append("g")
         .attr("class", "legend")
         .attr("transform", (d, i) => `translate(0,${i * 20})`)
-        .on("click", function(event, d){
+        .on("click", function (event, d) {
             console.log(keywords[d])
             if (selectedKeywords.includes(keywords[d])) {
                 selectedKeywords = selectedKeywords.filter(item => item !== keywords[d]);
