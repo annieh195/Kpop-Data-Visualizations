@@ -61,10 +61,10 @@ async function extractSetlistData(setlist, setlistArray){
 // Main code, triggers when html loads
 document.addEventListener('DOMContentLoaded', async() => {
     // Our team received feedback from the professor during office hours that our storyline would be even more compelling if we followed the specific journey of different K-Pop groups
-    // Selected 14 KPOP groups, ranging from 2nd to 4th generation groups, meaning they debuted (released to public) from 2000-2023
+    // Selected 15 KPOP groups, ranging from 2nd to 4th generation groups, meaning they debuted (released to public) from 2000-2023
     // Specifically selected the industry leading groups from each generation, with a mix of male and female groups to provide a more well-balanced story of K-Pop over time
     // Chose to not select groups who debuted from 2023 onward, which are relatively new and don't provide significant insight into the growth of K-Pop over time
-    const artists = ["BTS", "BLACKPINK", "PSY", "EXO", "DAY6", "Girls' Generation", "BigBang", "MAMAMOO", "MOMOLAND", "GOT7", "Stray Kids", "TOMORROW X TOGETHER", "ITZY", "ENHYPEN"];
+    const artists = ["BTS", "BLACKPINK", "PSY", "EXO", "DAY6", "Girls' Generation", "BigBang", "MAMAMOO", "MOMOLAND", "GOT7", "Stray Kids", "TOMORROW X TOGETHER", "ITZY", "ENHYPEN", "(G)-IDLE"];
     let concertsArray = ["Date,Artist,ConcertInfo,Latitude,Longitude"]; //header for CSV file
     
     for (i in artists){

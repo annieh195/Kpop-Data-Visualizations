@@ -51,17 +51,15 @@ Promise.all([
             }));
         })]);
 
-    // Color mapping for each of the 14 selected K-pop groups
+    // Color mapping for each of the 15 selected K-pop groups
     const kpopGroupColorScale = d3.scaleOrdinal() // Used colorbrewer qualitative color palette
-        .domain(["BTS", "BLACKPINK", "PSY", "EXO", "DAY6", "Girls' Generation", "BigBang", "MAMAMOO", "MOMOLAND", "GOT7", "Stray Kids", "TOMORROW X TOGETHER", "ITZY", "ENHYPEN"])
-        .range(["#cab2d6","#fb9a99","#02818a","#ffff99","#a6cee3","#d53e4f","#fdbf6f","#1f78b4","#b15928","#b2df8a","#e31a1c","#33a02c","#c51b7d","#ff7f00"])
+        .domain(["BTS", "BLACKPINK", "PSY", "EXO", "DAY6", "Girls' Generation", "BIGBANG", "MAMAMOO", "MOMOLAND", "GOT7", "Stray Kids", "TOMORROW X TOGETHER", "ITZY", "ENHYPEN", "(G)I-DLE", "The Beatles", "kpop"])
+        .range(["#cab2d6","#fb9a99","#02818a","#ffff99","#a6cee3","#d53e4f","#fdbf6f","#1f78b4","#b15928","#b2df8a","#e31a1c","#33a02c","#c51b7d","#ff7f00","#7e00bf","#d9d9d9","#006d2c"]);
     
     // Maps to colored PNG file for each Artist's associated music symbol, to display concert location
     const kpopConcertColorScale = d3.scaleOrdinal() // Used LUNAPIC web editor to edit music-note.png into kpopGroupColorScale versions
-        .domain(["BTS", "BLACKPINK", "PSY", "EXO", "DAY6", "Girls' Generation", "BigBang", 
-        "MAMAMOO", "MOMOLAND", "GOT7", "Stray Kids", "TOMORROW X TOGETHER", "ITZY", "ENHYPEN"])
-        .range(["./symbols/BTS.png","./symbols/BLACKPINK.png","./symbols/PSY.png","./symbols/EXO.png","./symbols/DAY6.png","./symbols/GirlsGen.png","./symbols/BigBang.png",
-        "./symbols/MAMAMOO.png","./symbols/MOMOLAND.png","./symbols/GOT7.png","./symbols/SKZ.png","./symbols/TXT.png","./symbols/ITZY.png","./symbols/ENHYPEN.png"])
+        .domain(["BTS", "BLACKPINK", "PSY", "EXO", "DAY6", "Girls' Generation", "BIGBANG", "MAMAMOO", "MOMOLAND", "GOT7", "Stray Kids", "TOMORROW X TOGETHER", "ITZY", "ENHYPEN", "(G)I-DLE"])
+        .range(["./symbols/BTS.png","./symbols/BLACKPINK.png","./symbols/PSY.png","./symbols/EXO.png","./symbols/DAY6.png","./symbols/GirlsGen.png","./symbols/BIGBANG.png","./symbols/MAMAMOO.png","./symbols/MOMOLAND.png","./symbols/GOT7.png","./symbols/SKZ.png","./symbols/TXT.png","./symbols/ITZY.png","./symbols/ENHYPEN.png","./symbols/GIDLE.png"]);
 
     // Tooltip for each state that shows interest
     var tooltip = d3.select("#map").append("div")
@@ -96,6 +94,8 @@ Promise.all([
                     .style("opacity", .9);
                 tooltip.html(d.ConcertInfo)
                     .style("background-color", function(){ // Tooltip color based on K-Pop group color
+                        console.log(d.Artist);
+                        console.log(kpopGroupColorScale(d.Artist));
                         return kpopGroupColorScale(d.Artist);
                     })
                     .style("border", "1px #a6cee3")
@@ -141,7 +141,7 @@ Promise.all([
         plotConcerts(month); // Update concerts
     }
 
-    // Legend
+    // Interest Map Legend
     const rendInterestLegend = () => {
         const legendScale = d3.scalePoint()
             .domain(ticks)
@@ -178,14 +178,15 @@ Promise.all([
     };
     rendInterestLegend();
 
-    const rendGroupLegend = () => { // to display legend, used for both vis
+    // UNUSED
+    const rendGroupLegend = () => { // To display color legend, used for both vis
         const svg = d3.select("svg");
         legendData = kpopGroupColorScale.domain();
         console.log(legendData)
     
         const legend = svg.append("g")
             .attr("class", "legend")
-            .attr("transform", `translate(${0.66*width}, ${height*0.48})`);
+            .attr("transform", `translate(${0.66*width}, ${height*0.40})`);
         legend.append("text")
             .text("K-Pop Group Color Legend")
             .attr("font-size", "18px")
@@ -211,7 +212,7 @@ Promise.all([
             y += 20; 
         }
     }
-    rendGroupLegend();
+    //rendGroupLegend();
 
     // Time Slider
     var slider = d3.select("#slider")
