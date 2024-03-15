@@ -436,7 +436,7 @@ Promise.all([
         // Update y scales domain
         if (autoMode) {
             selectedKeywords = ["kpop"];
-            y.domain([0, d3.max(filteredData, d => +d["kpop"])]);
+            // y.domain([0, d3.max(filteredData, d => +d["kpop"])]);
         } else {
             selectedKeywords = keywords.filter(keyword => !notSelectedKeywords.includes(keyword));
             y.domain([0, d3.max(filteredData, d => d3.max(selectedKeywords, key => +d[key]))]);
@@ -458,7 +458,7 @@ Promise.all([
                 .attr("class", "line line-" + keyword.replace(" ", "").replace("'", ""))
                 .attr("fill", "none")
                 .attr("stroke", kpopGroupColorScale(keyword))
-                .attr("stroke-width", keyword === "kpop" ? 5 : 2)
+                .attr("stroke-width", keyword === "kpop" ? 4 : 2)
                 .transition()
                 .duration(1000)
                 .attr("d", line);
@@ -479,17 +479,18 @@ Promise.all([
                             .join("circle")
                             .attr("class", "dot dot-" + dateInfo.year + "-" + dateInfo.month)
                             .attr("cx", d => x(d.Date))
-                            .attr("cy", d => y(+d[keyword]))
-                            .attr("r", 5)
+                            .attr("cy", d => y(+d["kpop"]))
+                            .attr("r", 7)
                             .style("fill", "red")
+                            .style("display", "block")
                             .on("mouseover", function(event, d) {
-                                const tooltipX = d3.mouse(this)[0] - 250;
-                                const tooltipY = d3.mouse(this)[1] + 10;
+                                // const tooltipX = d3.mouse(this)[0] - 250;
+                                // const tooltipY = d3.mouse(this)[1] + 10;
                                 
                                 keyEventTooltip.select(".tooltip-text")
                                     .html(dateInfo.text)
-                                    .style("top", tooltipY + "px")
-                                    .style("left", tooltipX + "px");
+                                    .style("top", "10 px")
+                                    .style("left", "10 px");
 
                                 keyEventTooltip.style("visibility", "visible")
                                     .attr("transform", `translate(${tooltipX},${tooltipY})`);;
@@ -546,9 +547,15 @@ keyEventTooltip.append("rect")
             if (selectedKeywords.includes(keywords[d])) {
                 selectedKeywords = selectedKeywords.filter(item => item !== keywords[d]);
                 notSelectedKeywords.push(keywords[d]);
+                if (keywords[d] == "kpop") {
+                    d3.selectAll(".dot").style("display", "none");
+                }
             } else {
                 selectedKeywords.push(keywords[d]);
                 notSelectedKeywords = notSelectedKeywords.filter(item => item !== keywords[d]);
+                if (keywords[d] == "kpop") {
+                    d3.selectAll(".dot").style("display", "block");
+                }
             }
             // Redraw lines and update axes based on updated selectedKeywords
             drawLines(selectedKeywords, selectedMonth);
@@ -640,7 +647,7 @@ keyEventTooltip.append("rect")
         autoIncrementSlider(); // Redraw the chart
         intervalId = setInterval(autoIncrementSlider, 100); // Restart auto-incrementing
         document.getElementById("interactButton").style.display = "none";
-        console.log("sgfujhkls")
+        d3.selectAll(".dot").style("display", "none");
     });
     // Add an event listener for the interact button
     document.getElementById('interactButton').addEventListener('click', function() {
@@ -651,6 +658,7 @@ keyEventTooltip.append("rect")
         sliderControl.value(1); // Reset slider to initial position
         slider.selectAll("text").remove(); // Remove slider text
         document.getElementById("interactButton").style.display = "none";
+        d3.selectAll(".dot").style("display", "none");
     });
 }).catch(function (error) {
     console.error('Error loading or processing data:', error);
