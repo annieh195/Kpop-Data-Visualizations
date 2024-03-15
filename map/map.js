@@ -648,6 +648,7 @@ keyEventTooltip.append("rect")
         autoIncrementSlider(); // Redraw the chart
         intervalId = setInterval(autoIncrementSlider, 100); // Restart auto-incrementing
         document.getElementById("interactButton").style.display = "none";
+        console.log("sgfujhkls")
     });
     // Add an event listener for the interact button
     document.getElementById('interactButton').addEventListener('click', function() {
