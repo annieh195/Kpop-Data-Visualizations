@@ -1,10 +1,10 @@
-# K-pop Revolution: The Impact on the US Music Industry
+# K-Pop Revolution: The Impact on the US Music Industry
 
 ## Introduction
 This project explores the growing influence of K-Pop in the United States music industry. Utilizing a blend of data analysis and visualization, we delve into the trends and patterns that signify K-Pop's evolving role and its impact on music preferences across the United States. More specifically K-Pop interest data along with related concert and K-Pop groups metrics. Provide insightful visualizations of concert locations, trends in K-Pop music, and trends in K-Pop group interest over time.
 
 ## Software Functionalities
-- **Data Analysis**: We analyze extensive datasets encompassing K-pop concert metrics, interest in K-Pop music over time data, and interest in different K-Pop groups. This analysis sheds light on the geographical spread and temporal evolution of K-Pop's popularity.
+- **Data Analysis**: We analyze extensive datasets encompassing K-Pop concert metrics, interest in K-Pop music over time data, and interest in different K-Pop groups. This analysis sheds light on the geographical spread and temporal evolution of K-Pop's popularity.
 - **Visualization Tools**: The project features interactive visualizations like a choropleth map pinpointing concert locations and multi-line chart tracking K-Pop groups' trends over time. These tools offer a dynamic and engaging way to explore the data.
 
 ## User Instructions
@@ -24,4 +24,4 @@ This project explores the growing influence of K-Pop in the United States music 
 - Use the interactive tools to customize the data display.
 
 ## Conclusion
-The K-pop Revolution project aims to provide a comprehensive view of K-pop's expanding footprint in the US music industry. By analyzing and visualizing key data, we hope to offer valuable insights into this dynamic and vibrant music genre.
+The K-Pop Revolution project aims to provide a comprehensive view of K-Pop's expanding footprint in the US music industry. By analyzing and visualizing key data, we hope to offer valuable insights into this dynamic and vibrant music genre.
