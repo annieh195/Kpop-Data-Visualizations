@@ -24,12 +24,23 @@
         }
         #replayButton {
             position: absolute;
-            bottom: 10px;
+            bottom: 15px;
+            left: 50px;
+        }
+        #detailedReplayButton {
+            position: absolute;
+            bottom: 15px;
+            left: 188px;
         }
         #interactButton {
             position: absolute;
-            bottom: 10px;
-            left: 70px;
+            bottom: 15px;
+            left: 375px;
+        }
+        #annotationText {
+            position: absolute;
+            bottom: 25px;
+            left: 400px;
         }
     </style>
     <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -42,7 +53,9 @@
     <div id="map"></div>
     <div id="chart" style="float:right;"></div>
 	<div id="slider"></div>
-    <button id="replayButton" style="display: none;">Replay</button>
+    <div id="annotationText"></div>
+    <button id="detailedReplayButton" style="display: none;">Detailed Replay Visualization</button>
+    <button id="replayButton" style="display: none;">Replay Visualization</button>
     <button id="interactButton" style="display: none;">Interact</button>
 
     <script src="map.js"></script>

@@ -34,19 +34,19 @@ Promise.all([
         .style("position", "absolute");
     svg.append("text")
         .attr("x", 20)
-        .attr("y", 50)
+        .attr("y", 40)
         .attr("font-size", "35px")
         .style("fill", "black")
         .text("K-Pop Revolution: The Impact on the US Music Industry");
     svg.append("text")
         .attr("x", 40)
-        .attr("y", 115)
+        .attr("y", 85)
         .attr("font-size", "18px")
         .style("fill", "black")
         .text("Choropleth Map of Relative Interest in \"kpop\" Over Time w/ Concert Occurrences");
     svg.append("text")
         .attr("x", 40)
-        .attr("y", 135)
+        .attr("y", 105)
         .attr("font-size", "18px")
         .style("fill", "black")
         .text("for 15 Industry Leading K-Pop Groups");
@@ -55,7 +55,7 @@ Promise.all([
         .append("svg")
         .attr("width", width/2)
         .style("position", "absolute")
-        .style("top", "100px")
+        .style("top", "70px")
         .style("left", "710px")
         .attr("height", chartHeight + chartMargin.top + chartMargin.bottom+ 20)
         .append("g")
@@ -70,7 +70,7 @@ Promise.all([
         .text("Multiline Chart of Online Search Volume for 15 Industry Leading K-Pop Groups Over Time");
     svgChart.append("text")
         .attr("x", 80)
-        .attr("y", 610)
+        .attr("y", 465)
         .attr("font-size", "18px")
         .style("fill", "black")
         .text("Volume of Google Searches in a Month vs Date by Month");
@@ -294,7 +294,7 @@ Promise.all([
 
         const g = svg.append("g")
             .attr("id", "legend")
-            .attr("transform", "translate(" + [mapWidth * 0.40, 180] + ")")
+            .attr("transform", "translate(" + [mapWidth * 0.40, 120] + ")")
 
         g.append("text")
             .attr("x", 170)
@@ -361,7 +361,7 @@ Promise.all([
         .attr("width", mapWidth-100)
         .attr("height", 88)
         .style("position", "absolute")
-        .style("top", "680px")
+        .style("top", "585px")
         .style("left", "45px")
         .append("g")
         .attr("transform", "translate(" + [mapWidth / 16, 10] + ")");
@@ -381,7 +381,7 @@ Promise.all([
 
     slider.append("text") // Initialize feature title
         .attr("x", mapWidth * 0.16)
-        .attr("y", 65)
+        .attr("y", 55)
         .attr("font-size", "18px")
         .style("fill", "black")
         .text("Time Slider: From Jan 2012 to Feb 2024");
@@ -401,7 +401,7 @@ Promise.all([
 
             slider.append("text") // <Make feature title persistent despite "onchange" removing all text
                 .attr("x", mapWidth * 0.16)
-                .attr("y", 65)
+                .attr("y", 55)
                 .attr("font-size", "18px")
                 .style("fill", "black")
                 .text("Time Slider: From Jan 2012 to Feb 2024");
@@ -409,7 +409,7 @@ Promise.all([
             //console.log(selectedMonth.slice(0));
             slider.append("text")
                 .attr("x", monthScale(val))
-                .attr("y", 40)
+                .attr("y", 35)
                 .text(selectedMonth.slice(0))
                 .attr("text-anchor", "middle")
                 .attr("font-size", "18px");
@@ -465,9 +465,20 @@ Promise.all([
 
             if (keyword === "kpop") {
                 const datesToPlot = [
-                    { month: 6, year: 2012, text: '“GANGNAM STYLE” or “강남스타일” by PSY was released on July 15, 2012 on YouTube. As of March 1, 2024, the video has 5,073,695,257 views on YouTube. This song is still the most viewed video/song by a K-pop artist on YouTube today.'}, // July 2012
-                    { month: 8, year: 2018, text: 'BTS spoke at the UN for the 1st time on September 24, 2018.' }, // September 2018
-                    { month: 4, year: 2019, text: 'On May 1, 2019, BTS attended the Billboard Music Awards for the 3rd time and won the Top Social Artist and Top Duo/Group awards.' }  // May 2019
+                    { month: 12, year: 2012, text: '“GANGNAM STYLE” or “강남스타일” by PSY was released on July 15, 2012 on YouTube. On December 21, 2012, it became the first video to reach 1 billion views on YouTube.'}, // Dec 2012
+                    { month: 4, year: 2017, text: 'On April 10, 2017, BTS was nominated for the 2017 Billboard Music Awards in the Top Social Artist category for the first time. This makes them the first K-pop group to be nominated for an American music award.' }, // Apr 2017
+                    { month: 6, year: 2018, text: '“DDU-DU DDU-DU” or “뚜두뚜두” by BLACKPINK was released on June 15, 2018, on YouTube. As of March 10, 2024, the video has 2,177,028,421 views on YouTube. This song is the 2nd most viewed video/song by a K-pop artist on YouTube.' },  // Jun 2018
+                    { month: 9, year: 2018, text: 'On September 24, 2018, BTS was invited by UNICEF to speak to the United Nations Assembly about its global #ENDviolence campaign. During his speech, BTS leader RM urged the world to love and speak for themselves.'},
+                    { month: 5, year: 2019, text: 'On May 1, 2019, BTS attended the Billboard Music Awards for the 3rd time and won the Top Social Artist and Top Duo/Group awards. Later in the year, they wre also nominated for Tour of the Year, Favorite Social Artist, Favorite Duo or Group Pop/Rock at the American Music Awards and won all of those categories.'},
+                    { month: 7, year: 2019, text: 'The VMAs become the first major award show to add a K-Pop cateogry, where groups like BTS, Blackpink, EXO, and Tomorrow-X-Together were all nominated for music videos.'},
+                    { month: 11, year: 2020, text: 'On November 24, 2020, BTS was nominated for the 2021 Grammy Award in the Best Pop Duo/Group category for the 1st time for their song “Dynamite”. While they unfortunately did not win, they were the first K-pop artist to receive a nomination.'},
+                    { month: 4, year: 2021, text: 'On April 29, 2021, BLACKPINK was nominated for the 2021 Billboard Music Awards in the Top Social Artist category for the 1st time. They were the first female K-pop group to be nominated for a major American music award.'},
+                    { month: 11, year: 2021, text: 'On November 19, 2021 Big Hit/HYBE entertainment group hit its all time highest stock price at 400,500 Korean Won ~ 305 USD and Cube Entertainment also peaked at 26,700 Korean Won ~ 20 USD'},
+                    { month: 10, year: 2022, text: 'On October 13, 2022, the American Music Awards added the Favorite K-pop Artist category.'},
+                    { month: 3, year: 2023, text: 'On March 10, 2023, SM Entertainment, the company that houses groups such as EXO, NCT, and Red Velvet, hit its all-time highest stock price at 147,000 KRW ~ 112 USD.'},
+                    { month: 5, year: 2023, text: 'On May 26, 2023, YG Entertainment (와이지엔터테인먼트), the company that houses groups such as BLACKPINK, iKON, AKMU, and BIGBANG, hit its all-time highest stock price at 96,000 KRW ~ 70 USD.'},
+                    { month: 6, year: 2023, text: 'On June 16, 2023, JYP, the company that houses groups such as ITZY, Day6, Wonder Girls, and Stray Kids, hit its all-time peak stock price at 136,000 KRW ~ 103 USD.'},
+                    { month: 11, year: 2023, text: 'On November 19, 2023, while BLACKPINK did not attend the 2023 Billboard Music Awards, they won the Top K-pop Touring Artist award. They were the first female K-pop group to receive an award from a major American music award.'}
                 ];
 
                 datesToPlot.forEach(dateInfo => {
@@ -481,7 +492,9 @@ Promise.all([
                             .attr("cx", d => x(d.Date))
                             .attr("cy", d => y(+d["kpop"]))
                             .attr("r", 7)
-                            .style("fill", "red")
+                            .style("fill", "white")
+                            .attr("stroke", "black")
+                            .attr("stroke-width", "2px")
                             .style("display", "block")
                             .on("mouseover", function(event, d) {
                                 // const tooltipX = d3.mouse(this)[0] - 250;
@@ -512,20 +525,20 @@ Promise.all([
 
     // Append a tooltip to the chart
     const keyEventTooltip = svgChart.append("g")
-    .attr("class", "keyEventTooltip")
-    .style("visibility", "hidden")
-    .attr("width", 200)
-    .attr("height", 50);
+        .attr("class", "keyEventTooltip")
+        .style("visibility", "hidden")
+        .attr("width", 200)
+        .attr("height", 500);
 
-keyEventTooltip.append("rect")
-    .attr("width", 500)
-    .attr("height", 50)
-    .attr("fill", "red")
-    .style("opacity", 0.8);
+    keyEventTooltip.append("rect")
+        .attr("width", 515)
+        .attr("height", 80)
+        .attr("fill", "#006d2c")
+        .style("opacity", 0.8);
 
     keyEventTooltip.append("foreignObject")
         .attr("width", 500)
-        .attr("height", 50)
+        .attr("height", 100)
         .append("xhtml:div")
         .style("width", "500px")
         .style("height", "50px")
@@ -533,7 +546,7 @@ keyEventTooltip.append("rect")
         .style("text-align", "left")
         .style("padding", "5px")
         .attr("class", "tooltip-text")
-        .style("font-size", "12px");
+        .style("font-size", "15px");
 
     keyEventTooltip.append("xhtml:div")
         .style("font-size", "4px");
@@ -542,7 +555,7 @@ keyEventTooltip.append("rect")
         .data(keywords)
         .enter().append("g")
         .attr("class", "legend")
-        .attr("transform", (d, i) => `translate(-615,${i * 20+230})`)
+        .attr("transform", (d, i) => `translate(-615,${i * 20+130})`)
         .on("click", function (event, d) {
             if (selectedKeywords.includes(keywords[d])) {
                 selectedKeywords = selectedKeywords.filter(item => item !== keywords[d]);
@@ -596,16 +609,17 @@ keyEventTooltip.append("rect")
             slider.selectAll("text").remove();
             const tickText = slider.append("text")
                 .attr("x", monthScale(val))
-                .attr("y", 40)
+                .attr("y", 30)
                 .text(selectedMonth.slice(3, 15).replace("01 ", ""))
                 .attr("text-anchor", "middle")
-                .attr("font-size", "12px");
+                .attr("font-size", "15px");
         } else {
             clearInterval(intervalId); // Stop auto-incrementing when reaching the end
             autoMode = false;
             // selectedKeywords = keywords;
             document.getElementById("interactButton").style.display = "inline";
             document.getElementById("replayButton").style.display = "inline";
+            document.getElementById("detailedReplayButton").style.display = "inline";
         }
     }
 
@@ -635,23 +649,69 @@ keyEventTooltip.append("rect")
     }
 
     // Set up interval for automatic slider increment
-    let intervalId = setInterval(autoIncrementSlider, 100);
+    let intervalId = setInterval(autoIncrementSlider, 150);
+    let timeoutId;
 
     // Add a replay button event listener
     document.getElementById('replayButton').addEventListener('click', function() {
         clearInterval(intervalId); // Clear any existing interval
+        clearTimeout(timeoutId); // Clear any existing timeouts
         autoMode = true;
         selectedKeywords = ["kpop"]; // Reset selectedKeywords to initial state
         notSelectedKeywords = keywords.filter(keyword => !selectedKeywords.includes(keyword));
         sliderControl.value(1); // Reset slider to initial position
         autoIncrementSlider(); // Redraw the chart
-        intervalId = setInterval(autoIncrementSlider, 100); // Restart auto-incrementing
+        intervalId = setInterval(autoIncrementSlider, 150); // Restart auto-incrementing
+        document.getElementById("interactButton").style.display = "inline";
+        d3.selectAll(".dot").style("display", "none");
+    });
+    document.getElementById('detailedReplayButton').addEventListener('click', function() {
+        clearInterval(intervalId); // Clear any existing interval
+        clearTimeout(timeoutId); // Clear any existing timeouts
+        autoMode = true;
+        selectedKeywords = ["kpop"]; // Reset selectedKeywords to initial state
+        notSelectedKeywords = keywords.filter(keyword => !selectedKeywords.includes(keyword));
+        sliderControl.value(1); // Reset slider to initial position
+        
+        function displayMessage(duration, annotationText, clearAnnotation = false){
+            setTimeout(function(){
+                if(clearAnnotation){
+                    document.getElementById("annotationText").innerText = "";
+                }else{
+                    document.getElementById("annotationText").innerText = annotationText;
+                }
+            }, duration);
+        }
+        // Timed annotations for extended replay
+        displayMessage(500,"In the last decade or so, K-Pop, or Korean Pop music, has dramatically impacted the US music industry.");
+        displayMessage(3100,"Korean artists have headlined at major US music festivals like Coachella, were nominated for Grammys, and spoke at the United Nations.");
+        displayMessage(5200,"Groups like BTS and Blackpink have had multiple sold-out concerts with over 600,000 attendees over 4 days at SOFI stadium and the Rose Bowl Stadium, the same stadiums that artists like Taylor Swift use for concerts.");
+        displayMessage(9800,"Tickets have sold for nearly 4,000 USD.");
+        displayMessage(11400,"K-Pop songs like “Butter” have held #1 spot on the Billboard Music charts for 10 weeks straight, and others have stayed on the Hot 100 for over half a year straight.");
+        displayMessage(14600,"What is unique about the K-Pop industry?");
+        displayMessage(16800,"In Korea, several major entertainment companies like BigHit and JYP manage all music and artists.");
+        displayMessage(19400,"These major corporations recruit and train talented artists from youth and each individual artist has an area of focus - singing, dancing, rapping, visual, or another distinct skill.");
+        displayMessage(23000,"Unlike the majority of US artists, artists in K-Pop debut within artist groups that can range from 2 to over 20 members!");
+        displayMessage(25600,"Each artist group releases music together, with specific styles and visual themes.");
+        displayMessage(28200,"Music releases are highly coordinated efforts, and artist groups perform frequently. K-Pop music is also highly established in Korea - the Korean broadcast group SBS runs weekly, monthly, and yearly performances like Inkigayo where various artists perform very often. ");
+        displayMessage(32800,"There are many ways for fans to interact with artists - groups will hold fan meets, go live on various social media platforms, and sell various collectibles.");
+        displayMessage(28000,"While the music culture associated with the K-Pop industry is highly different from the music culture in the US music industry, in the last decade K-Pop has gradually assimilated into the US, topping music charts and winning awards.");
+        displayMessage(35800,"Even in our everyday lives at UC Davis, the impact is clear - multiple K-Pop dance teams have been founded by UCD students, the Men’s basketball team just hosted a K-Pop themed game, and this year if you listened to K-Pop, Spotify Wrapped said you listened to the same music as people in Davis, CA.");
+        displayMessage(45400,"While many have noticed the distinct growth of K-Pop influence, there hasn’t been a concrete study of how K-Pop influence has grown to the place it is now.");
+        displayMessage(50000,"Through these visualizations, you’ll have an opportunity to learn more about the K-Pop revolution in the US.");
+        displayMessage(54600,"Click \"Replay Visualization\" to see a sped up overview of the visualization, or click \"Interact\" to interact with the full visualization!");
+        displayMessage(58400,"ignore",true);
+        
+        autoIncrementSlider(); // Redraw the chart
+        intervalId = setInterval(autoIncrementSlider, 350); // Restart auto-incrementing
         document.getElementById("interactButton").style.display = "none";
+        document.getElementById("replayButton").style.display = "none";
         d3.selectAll(".dot").style("display", "none");
     });
     // Add an event listener for the interact button
     document.getElementById('interactButton').addEventListener('click', function() {
         clearInterval(intervalId); // Clear any existing interval
+        clearTimeout(timeoutId); // Clear any existing timeouts
         autoMode = false;
         selectedKeywords = keywords; // Show all keywords
         notSelectedKeywords = [];
