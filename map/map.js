@@ -422,8 +422,9 @@ Promise.all([
 
     let autoMode = true;
     // Function to draw lines and update axes
+    // Function to draw lines and update axes
     function drawLines(selectedKeywords, selectedMonth) {
-        const selectedDate = new Date(selectedMonth)
+        const selectedDate = new Date(selectedMonth);
         const filteredData = chartData.filter(d => d.Date <= selectedDate);
         notSelectedKeywords.forEach(keyword => {
             // Remove existing lines
@@ -435,7 +436,7 @@ Promise.all([
         // Update y scales domain
         if (autoMode) {
             selectedKeywords = ["kpop"];
-            y.domain([0, d3.max(0, selectedKeywords)]);
+            y.domain([0, d3.max(filteredData, d => +d["kpop"])]);
         } else {
             selectedKeywords = keywords.filter(keyword => !notSelectedKeywords.includes(keyword));
             y.domain([0, d3.max(filteredData, d => d3.max(selectedKeywords, key => +d[key]))]);
@@ -480,7 +481,27 @@ Promise.all([
                             .attr("cx", d => x(d.Date))
                             .attr("cy", d => y(+d[keyword]))
                             .attr("r", 5)
-                            .style("fill", "red");
+                            .style("fill", "red")
+                            .on("mouseover", function(event, d) {
+                                // Calculate tooltip position relative to the SVG chart
+                                const tooltipX = d3.pointer(event)[0] + 10; // Add a small offset
+                                const tooltipY = d3.pointer(event)[1] - 10; // Subtract a small offset
+                            
+                                // Update tooltip content and position dynamically
+                                keyEventTooltip.select("text")
+                                    .text(dateInfo.text)
+                                    // .attr("x", tooltipX)
+                                    // .attr("y", tooltipY)
+                                    // .attr("width", 200)
+                                    // .attr("height", 50)
+                                    .attr("transform", `translate(${tooltipX},${tooltipY})`);
+                                keyEventTooltip.style("visibility", "visible")
+                                    .attr("transform", `translate(${tooltipX},${tooltipY})`);
+                            })
+                            .on("mouseout", function () {
+                                keyEventTooltip.style("visibility", "hidden");
+                            });
+                            
                     }
                 });
             }
@@ -492,6 +513,24 @@ Promise.all([
         colorLegend.selectAll("text")
             .style("opacity", d => selectedKeywords.includes(d) ? 1 : 0.3);
     }
+
+    // Append a tooltip to the chart
+    const keyEventTooltip = svgChart.append("g")
+        .attr("class", "keyEventTooltip")
+        .style("visibility", "hidden");
+
+    keyEventTooltip.append("rect")
+        .attr("width", 200)
+        .attr("height", 50)
+        .attr("fill", "white")
+        .style("opacity", 0.8);
+    keyEventTooltip.append("text")
+            .attr("text-anchor", "middle")
+            .attr("font-size", "12px")
+            .attr("width", 200)
+            .attr("height", 50)
+            .attr("dy", "1.2em");
+
     // Add legend
     svgChart.append("text")
         .attr("x", -145)
@@ -613,7 +652,6 @@ Promise.all([
     });
     // Add an event listener for the interact button
     document.getElementById('interactButton').addEventListener('click', function() {
-        console.log("hi")
         clearInterval(intervalId); // Clear any existing interval
         autoMode = false;
         selectedKeywords = keywords; // Show all keywords
