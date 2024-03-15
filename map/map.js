@@ -552,14 +552,6 @@ keyEventTooltip.append("rect")
             }
             // Redraw lines and update axes based on updated selectedKeywords
             drawLines(selectedKeywords, selectedMonth);
-
-            // Toggle opacity of legend box and text
-            const legendRect = d3.select(this).select("rect");
-            const legendText = d3.select(this).select("text");
-            const currentOpacity = parseFloat(legendRect.style("opacity") || 1);
-            const newOpacity = currentOpacity === 1 ? 0.3 : 1;
-            legendRect.style("opacity", newOpacity);
-            legendText.style("opacity", newOpacity);
         });
         colorLegend.append("rect")
             .attr("x", chartWidth - 18)
