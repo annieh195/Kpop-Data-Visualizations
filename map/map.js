@@ -483,25 +483,20 @@ Promise.all([
                             .attr("r", 5)
                             .style("fill", "red")
                             .on("mouseover", function(event, d) {
-                                // Calculate tooltip position relative to the SVG chart
-                                const tooltipX = d3.pointer(event)[0] + 10; // Add a small offset
-                                const tooltipY = d3.pointer(event)[1] - 10; // Subtract a small offset
-                            
-                                // Update tooltip content and position dynamically
-                                keyEventTooltip.select("text")
-                                    .text(dateInfo.text)
-                                    // .attr("x", tooltipX)
-                                    // .attr("y", tooltipY)
-                                    // .attr("width", 200)
-                                    // .attr("height", 50)
-                                    .attr("transform", `translate(${tooltipX},${tooltipY})`);
+                                const tooltipX = d3.mouse(this)[0] - 250;
+                                const tooltipY = d3.mouse(this)[1] + 10;
+                                
+                                keyEventTooltip.select(".tooltip-text")
+                                    .html(dateInfo.text)
+                                    .style("top", tooltipY + "px")
+                                    .style("left", tooltipX + "px");
+
                                 keyEventTooltip.style("visibility", "visible")
-                                    .attr("transform", `translate(${tooltipX},${tooltipY})`);
+                                    .attr("transform", `translate(${tooltipX},${tooltipY})`);;
                             })
                             .on("mouseout", function () {
                                 keyEventTooltip.style("visibility", "hidden");
-                            });
-                            
+                            });   
                     }
                 });
             }
@@ -516,27 +511,31 @@ Promise.all([
 
     // Append a tooltip to the chart
     const keyEventTooltip = svgChart.append("g")
-        .attr("class", "keyEventTooltip")
-        .style("visibility", "hidden");
+    .attr("class", "keyEventTooltip")
+    .style("visibility", "hidden")
+    .attr("width", 200)
+    .attr("height", 50);
 
-    keyEventTooltip.append("rect")
-        .attr("width", 200)
+keyEventTooltip.append("rect")
+    .attr("width", 500)
+    .attr("height", 50)
+    .attr("fill", "red")
+    .style("opacity", 0.8);
+
+    keyEventTooltip.append("foreignObject")
+        .attr("width", 500)
         .attr("height", 50)
-        .attr("fill", "white")
-        .style("opacity", 0.8);
-    keyEventTooltip.append("text")
-            .attr("text-anchor", "middle")
-            .attr("font-size", "12px")
-            .attr("width", 200)
-            .attr("height", 50)
-            .attr("dy", "1.2em");
+        .append("xhtml:div")
+        .style("width", "500px")
+        .style("height", "50px")
+        .style("word-wrap", "break-word")
+        .style("text-align", "left")
+        .style("padding", "5px")
+        .attr("class", "tooltip-text")
+        .style("font-size", "12px");
 
-    // Add legend
-    svgChart.append("text")
-        .attr("x", -145)
-        .attr("y", 220)
-        .attr("font-size", "15px")
-        .text("Group Legend");
+    keyEventTooltip.append("xhtml:div")
+        .style("font-size", "4px");
 
     const colorLegend = svgChart.selectAll(".legend")
         .data(keywords)
