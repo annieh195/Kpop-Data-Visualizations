@@ -25,3 +25,7 @@ This project explores the growing influence of K-Pop in the United States music 
 
 ## Conclusion
 The K-Pop Revolution project aims to provide a comprehensive view of K-Pop's expanding footprint in the US music industry. By analyzing and visualizing key data, we hope to offer valuable insights into this dynamic and vibrant music genre.
+
+## Repo Navigation ##
+- **Visualization**: All the source code for the visualizion itself is located in the Visualizations folder.
+- **CSV**: The folders named "creating_******_dataset" contain the source code for each of the 3 CSV dataset files we created. Each folder includes the express server used to interact with each API and the source code for parsing the desired data into a CSV file.
